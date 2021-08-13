@@ -1,6 +1,38 @@
-.vscode
-node_modules
+# compiled output
+/dist
+/node_modules
+/documentation
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
 .DS_Store
+
+# Tests
+/coverage
+/.nyc_output
+
+# IDEs and editors
 /.idea
-/build
-/.cache
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+
+.env
+.adminjs
+uploads
+
+traefik.yml
+docker-compose.test.yml
