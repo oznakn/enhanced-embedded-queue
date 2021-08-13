@@ -1,20 +1,19 @@
-# embedded-queue
-![Test](https://github.com/hajipy/embedded-queue/workflows/Test/badge.svg)
+# enhanced-embedded-queue
 
-embedded-queue is job/message queue for Node.js and Electron. It is not required other process for persistence data, like Redis, MySQL, and so on. It persistence data by using [nedb](https://github.com/louischatriot/nedb) embedded database.
+enhanced-embedded-queue is a fork of [https://www.npmjs.com/package/embedded-queue](embedded-queue) that uses [https://www.npmjs.com/package/nedb-promises](nedb-promises) instead of [https://www.npmjs.com/package/nedb](nedb).
 
 ## Installation
 ```sh
-npm install --save embedded-queue 
+npm install --save enhanced-embedded-queue
 ```
-or 
+or
 ```sh
-yarn add embedded-queue 
+yarn add enhanced-embedded-queue
 ```
 
 ## Basic Usage
 ```js
-const EmbeddedQueue = require("embedded-queue");
+const EmbeddedQueue = require("enhanced-embedded-queue");
 
 (async () => {
     // argument path through nedb
@@ -72,7 +71,7 @@ Finally, `queue.process` method signature is `quque.process(type, processor, con
 
 | Event            | Description                                      | Handler Signature         |
 |------------------|--------------------------------------------------|---------------------------|
-| `Event.Enqueue`  | Job add to queue                                 | `(job) => void`           | 
+| `Event.Enqueue`  | Job add to queue                                 | `(job) => void`           |
 | `Event.Start`    | Job start processing                             | `(job) => void`           |
 | `Event.Failure`  | Job process fail                                 | `(job, error) => void`    |
 | `Event.Complete` | Job process complete                             | `(job, result) => void`   |
@@ -82,7 +81,7 @@ Finally, `queue.process` method signature is `quque.process(type, processor, con
 | `Event.Log`      | Job log add                                      | `(job, message) => void`  |
 | `Event.Priority` | Job priority change                              | `(job, priority) => void` |
 
-`Event.Complete` event handler is most commonly used, it can receive job result from job processor.  
+`Event.Complete` event handler is most commonly used, it can receive job result from job processor.
 
 ### Create Job
 You can create a job by calling `Queue.createJob(data)`. `data` argument is object that contains `type`, `priority` and `data`.
@@ -98,8 +97,8 @@ You can create a job by calling `Queue.createJob(data)`. `data` argument is obje
 `Priority` is any of `Priority.LOW`, `Priority.NORMAL`, `Priority.MEDIUM`, `Priority.HIGH`, `Priority.CRITICAL`.
 
 ### Shutdown Queue
-If you want stop processing jobs, you have to call `Queue.shutdown(timeoutMilliseconds, type) => Promise<void>`. `Queue` starts to stop running job processor, and all job processors are stopped, Promise is resolved. If stopping job processor takes long time, after `timeoutMilliseconds` `Queue` terminate job processor, and set `Job.state` to `State.FAILURE`.  
-You can stop specified type job processor by passing second argument `type`. If `undefined` is passed, stop all type job processors. 
+If you want stop processing jobs, you have to call `Queue.shutdown(timeoutMilliseconds, type) => Promise<void>`. `Queue` starts to stop running job processor, and all job processors are stopped, Promise is resolved. If stopping job processor takes long time, after `timeoutMilliseconds` `Queue` terminate job processor, and set `Job.state` to `State.FAILURE`.
+You can stop specified type job processor by passing second argument `type`. If `undefined` is passed, stop all type job processors.
 
 ## API
 
@@ -107,10 +106,10 @@ You can stop specified type job processor by passing second argument `type`. If 
 - `createJob(data)`: Create a new `Job`, see above for usage.
 - `process(type, processor, concurrency)`: Set job processor, see above for usage.
 - `shutdown(timeoutMilliseconds, type)`: Start shutting down `Queue`, see above for usage.
-- `findJob(id)`: Search queue by `Job.id`. If found return `Job`, otherwise return `null`. 
-- `listJobs(state)`: List all jobs that has specified state. If passed `undefined` return all jobs. 
-- `removeJobById(id)`: Remove a `Job` from queue that specified id. 
-- `removeJobsByCallback(callback)`: Remove all jobs that `callback` returns `true`. Callback signature is `(job) => boolean`. 
+- `findJob(id)`: Search queue by `Job.id`. If found return `Job`, otherwise return `null`.
+- `listJobs(state)`: List all jobs that has specified state. If passed `undefined` return all jobs.
+- `removeJobById(id)`: Remove a `Job` from queue that specified id.
+- `removeJobsByCallback(callback)`: Remove all jobs that `callback` returns `true`. Callback signature is `(job) => boolean`.
 
 ### Job API
 - `setProgress(completed, total)`: Set progress, arguments are convert to percentage value(completed / total).
@@ -118,7 +117,7 @@ You can stop specified type job processor by passing second argument `type`. If 
 - `save()`: After call it, job put into associate `Queue`, and waiting for process by job processor.
 - `remove()`: Remove job from `Queue`, it will not be processed anymore.
 - `setPriority(value)`: Set `priority` value.
-- `isExist()`: Return `Job` is in `Queue`. Before calling `save()` or after calling `remove()` returns `false`, otherwise `true`. 
+- `isExist()`: Return `Job` is in `Queue`. Before calling `save()` or after calling `remove()` returns `false`, otherwise `true`.
 - Getters
     - `id`: String that identifies `Job`.
     - `type`: String that Identifier for select job processor.
@@ -126,7 +125,7 @@ You can stop specified type job processor by passing second argument `type`. If 
     - `priority`: Number that determines processing order.
     - `createdAt`: Date that job is created.
     - `updatedAt`: Date that job is updated.
-    - `startedAt`: Date that job processor start process. Before job start, value is `undefined`. 
+    - `startedAt`: Date that job processor start process. Before job start, value is `undefined`.
     - `completedAt`: Date that job processor complete process. Before job complete or job failed, value is `undefined`.
     - `failedAt`:  Date that job processor occurred error. Before job complete or job complete successfully, value is `undefined`.
     - `state`: String that represents current `Job` state, any of `State.INACTIVE`, `State.ACTIVE`, `STATE.COMPLETE`, `State.FAILURE`.
@@ -137,7 +136,7 @@ You can stop specified type job processor by passing second argument `type`. If 
 ## Advanced
 
 ### Unexpectedly Termination
-If your program suddenly terminated without calling `Queue.shutdown` while your processor was processing jobs. These jobs remain `State.ACTIVE` in queue. When next time `Queue.createQueue` is called, these jobs are updated to `State.FAILURE` automatically.    
+If your program suddenly terminated without calling `Queue.shutdown` while your processor was processing jobs. These jobs remain `State.ACTIVE` in queue. When next time `Queue.createQueue` is called, these jobs are updated to `State.FAILURE` automatically.
 If you want reprocessing these jobs, please call `Queue.createJob` with same parameter.
 
 ## License

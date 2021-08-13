@@ -1,4 +1,4 @@
-import DataStore, { DataStoreOptions } from "nedb";
+import DataStore from "nedb-promises";
 
 import { Job } from "./job";
 import { State } from "./state";
@@ -19,157 +19,85 @@ export interface NeDbJob {
     logs: string[];
 }
 
-export type DbOptions = DataStoreOptions;
+export type DbOptions = Nedb.DataStoreOptions;
 
 export class JobRepository {
     protected readonly db: DataStore;
 
     public constructor(dbOptions: DbOptions = {}) {
-        this.db = new DataStore(dbOptions);
+        this.db = DataStore.create(dbOptions);
     }
 
-    public init(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.db.loadDatabase((error) => {
-                if (error !== null) {
-                    reject(error);
-                    return;
-                }
-
-                resolve();
-            });
-        });
+    public async init(): Promise<void> {
+        await this.db.load();
     }
 
-    public listJobs(state?: State): Promise<NeDbJob[]> {
-        return new Promise<NeDbJob[]>((resolve, reject) => {
-            const query = (state === undefined) ? {} : { state };
+    public async listJobs(state?: State): Promise<NeDbJob[]> {
+        const query = (state === undefined) ? {} : { state };
 
-            this.db.find(query)
-                .sort({ createdAt: 1 })
-                .exec((error, docs: NeDbJob[]) => {
-                    if (error !== null) {
-                        reject(error);
-                        return;
-                    }
-
-                    resolve(docs);
-                });
-        });
+        return this.db.find<NeDbJob>(query)
+            .sort({ createdAt: 1 });
     }
 
-    public findJob(id: string): Promise<NeDbJob | null> {
-        return new Promise<NeDbJob | null>((resolve, reject) => {
-            this.db.findOne({ _id: id }, (error, doc: NeDbJob| null) => {
-                    if (error !== null) {
-                        reject(error);
-                        return;
-                    }
-
-                    resolve(doc);
-                });
-        });
+    public async findJob(id: string): Promise<NeDbJob | null> {
+        return this.db.findOne<NeDbJob>({ _id: id });
     }
 
-    public findInactiveJobByType(type: string): Promise<NeDbJob | null> {
-        return new Promise<NeDbJob | null>((resolve, reject) => {
-            this.db.find({ type, state: State.INACTIVE })
+    public async findInactiveJobByType(type: string): Promise<NeDbJob | null> {
+        const docs = await this.db.find<NeDbJob>({ type, state: State.INACTIVE })
                 .sort({ priority: -1, createdAt: 1 })
-                .limit(1)
-                .exec((error, docs: NeDbJob[]) => {
-                    if (error !== null) {
-                        reject(error);
-                        return;
-                    }
+                .limit(1);
 
-                    resolve((docs.length === 0) ? null : docs[0]);
-                });
-        });
+        return (docs.length === 0) ? null : docs[0];
     }
 
-    public isExistJob(id: string): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => {
-            this.db.count({ _id: id }, (error, count: number) => {
-                if (error !== null) {
-                    reject(error);
-                    return;
-                }
-
-                resolve(count === 1);
-            });
-        });
+    public async isExistJob(id: string): Promise<boolean> {
+        return (await this.db.count({ _id: id })) === 1;
     }
 
     public addJob(job: Job): Promise<NeDbJob> {
-        return new Promise<NeDbJob>((resolve, reject) => {
-            const insertDoc = {
-                _id: job.id,
-                type: job.type,
+        const insertDoc = {
+            _id: job.id,
+            type: job.type,
+            priority: job.priority,
+            data: job.data,
+            createdAt: job.createdAt,
+            updatedAt: job.updatedAt,
+            state: job.state,
+            logs: job.logs,
+        };
+
+        return this.db.insert(insertDoc);
+    }
+
+    public async updateJob(job: Job): Promise<void> {
+        const query = {
+            _id: job.id,
+        };
+        const updateQuery = {
+            $set: {
                 priority: job.priority,
                 data: job.data,
                 createdAt: job.createdAt,
                 updatedAt: job.updatedAt,
+                startedAt: job.startedAt,
+                completedAt: job.completedAt,
+                failedAt: job.failedAt,
                 state: job.state,
+                duration: job.duration,
+                progress: job.progress,
                 logs: job.logs,
-            };
+            },
+        };
 
-            this.db.insert(insertDoc, (error, doc) => {
-                if (error !== null) {
-                    reject(error);
-                    return;
-                }
+        const numAffected = await this.db.update(query, updateQuery, {});
 
-                resolve(doc);
-            });
-        });
+        if (numAffected !== 1) {
+            throw new Error(`update unexpected number of rows. (expected: 1, actual: ${numAffected})`);
+        }
     }
 
-    public updateJob(job: Job): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            const query = {
-                _id: job.id,
-            };
-            const updateQuery = {
-                $set: {
-                    priority: job.priority,
-                    data: job.data,
-                    createdAt: job.createdAt,
-                    updatedAt: job.updatedAt,
-                    startedAt: job.startedAt,
-                    completedAt: job.completedAt,
-                    failedAt: job.failedAt,
-                    state: job.state,
-                    duration: job.duration,
-                    progress: job.progress,
-                    logs: job.logs,
-                },
-            };
-
-            this.db.update(query, updateQuery, {}, (error, numAffected) => {
-                if (error !== null) {
-                    reject(error);
-                    return;
-                }
-
-                if (numAffected !== 1) {
-                    reject(new Error(`update unexpected number of rows. (expected: 1, actual: ${numAffected})`));
-                }
-
-                resolve();
-            });
-        });
-    }
-
-    public removeJob(id: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.db.remove({ _id: id }, (error) => {
-                if (error) {
-                    reject(error);
-                    return;
-                }
-
-                resolve();
-            });
-        });
+    public async removeJob(id: string): Promise<void> {
+        await this.db.remove({ _id: id }, {});
     }
 }
