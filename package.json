@@ -39,10 +39,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/oznakn/nedb-persistent-queue.git"
+    "url": "https://github.com/oznakn/enhanced-embedded-queue.git"
   },
   "bugs": {
-    "url": "https://github.com/oznakn/nedb-persistent-queue/issues"
+    "url": "https://github.com/oznakn/enhanced-embedded-queue/issues"
   },
-  "homepage": "https://github.com/oznakn/nedb-persistent-queue#readme"
+  "homepage": "https://github.com/oznakn/enhanced-embedded-queue#readme"
 }
