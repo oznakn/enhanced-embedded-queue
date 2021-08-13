@@ -1,6 +1,6 @@
 # enhanced-embedded-queue
 
-enhanced-embedded-queue is a fork of [https://www.npmjs.com/package/embedded-queue](embedded-queue) that uses [https://www.npmjs.com/package/nedb-promises](nedb-promises) instead of [https://www.npmjs.com/package/nedb](nedb).
+enhanced-embedded-queue is a fork of [embedded-queue](https://www.npmjs.com/package/embedded-queue) that uses [nedb-promises](https://www.npmjs.com/package/nedb-promises) instead of [nedb](https://www.npmjs.com/package/nedb).
 
 ## Installation
 ```sh
