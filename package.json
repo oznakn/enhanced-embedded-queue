@@ -1,6 +1,6 @@
 {
   "name": "enhanced-embedded-queue",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Embedded job/message queue, NeDb backend.",
   "main": "dist/index.js",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "email": "ozn.akn@gmail.com"
   },
   "dependencies": {
-    "await-semaphore": "git+https://github.com/oznakn/await-semaphore.git",
+    "enhanced-await-semaphore": "^0.1.2",
     "nedb-promises": "^5.0.0",
     "uuid": "^8.3.2"
   },

@@ -893,10 +893,6 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-"await-semaphore@git+https://github.com/oznakn/await-semaphore.git":
-  version "0.1.3"
-  resolved "git+https://github.com/oznakn/await-semaphore.git#5a4bf186896cfb85ee87d409a0902a7e93c54fb8"
-
 babel-jest@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-27.0.6.tgz#e99c6e0577da2655118e3608b68761a5a69bd0d8"
@@ -1244,6 +1240,11 @@ emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
   integrity sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==
+
+enhanced-await-semaphore@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/enhanced-await-semaphore/-/enhanced-await-semaphore-0.1.2.tgz#0888d614d8ae833938ba013345326097361df203"
+  integrity sha512-CuuZX7yA066C/Gc2PTaaUZG5cSJlkntjc1OdZ3AlRMFg9NHS448lgBNnprgMmPvZFLJjAHi+1Q1vvbaDL0mdOA==
 
 enquirer@^2.3.5:
   version "2.3.6"

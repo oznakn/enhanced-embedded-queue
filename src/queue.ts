@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 
-import { Mutex } from "await-semaphore";
+import { Mutex } from "enhanced-await-semaphore";
 import { v4 as uuid } from "uuid";
 
 import { Event } from "./event";
